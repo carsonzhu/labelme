@@ -48,7 +48,7 @@ def label2rgb(lbl, img=None, n_labels=None, alpha=0.5, thresh_suppress=0):
     return lbl_viz
 
 
-def draw_label(label, img=None, label_names=None, colormap=None):
+def draw_label(label, img=None, label_names=None, colormap=None, csvFilePath=None):
     import matplotlib.pyplot as plt
     backend_org = plt.rcParams['backend']
     plt.switch_backend('agg')
@@ -71,12 +71,18 @@ def draw_label(label, img=None, label_names=None, colormap=None):
 
     plt_handlers = []
     plt_titles = []
+    fc_converts = []
     for label_value, label_name in enumerate(label_names):
         if label_value not in label:
             continue
-        if label_name.startswith('_'):
-            continue
         fc = colormap[label_value]
+        convert_fc = fc*255
+        convert = []
+        convert.append(label_name)
+        convert.append(convert_fc[0])
+        convert.append(convert_fc[1])
+        convert.append(convert_fc[2])
+        fc_converts.append(convert)
         p = plt.Rectangle((0, 0), 1, 1, fc=fc)
         plt_handlers.append(p)
         plt_titles.append('{value}: {name}'
@@ -93,4 +99,6 @@ def draw_label(label, img=None, label_names=None, colormap=None):
     out_size = (label_viz.shape[1], label_viz.shape[0])
     out = PIL.Image.open(f).resize(out_size, PIL.Image.BILINEAR).convert('RGB')
     out = np.asarray(out)
+    if csvFilePath is not None:
+        return out,fc_converts[1]
     return out
