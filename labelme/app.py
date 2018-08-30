@@ -27,9 +27,13 @@ from labelme.widgets import Canvas
 from labelme.widgets import ColorDialog
 from labelme.widgets import EscapableQListWidget
 from labelme.widgets import LabelDialog
+from labelme.widgets import ExportDialog
 from labelme.widgets import LabelQListWidget
 from labelme.widgets import ToolBar
 from labelme.widgets import ZoomWidget
+
+from labelme.utils import exportVOC_semantic
+from labelme.utils import exportVOC_instance
 
 
 # FIXME
@@ -85,6 +89,8 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             sort_labels=self._config['sort_labels'],
             show_text_field=self._config['show_label_text_field'],
         )
+
+        self.exportDialog = ExportDialog(parent=self)
 
         self.labelList = LabelQListWidget()
         self.lastOpenDir = None
@@ -287,6 +293,10 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                           shortcuts['fit_width'], 'fit-width',
                           'Zoom follows window width',
                           checkable=True, enabled=False)
+        export = action('export masks', self.setExportMasks,
+                        shortcuts['export_masks'], 'export',
+                        'Export masks')
+        self.curExportSetting = 0
         aiAssist = action('AI assist', self.setAIAssist,
                           shortcuts['ai_assist'], 'objects',
                           'AI assist by Polygon RNN++',
@@ -336,7 +346,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             createPointMode=createPointMode,
             shapeLineColor=shapeLineColor, shapeFillColor=shapeFillColor,
             zoom=zoom, zoomIn=zoomIn, zoomOut=zoomOut, zoomOrg=zoomOrg,
-            fitWindow=fitWindow, fitWidth=fitWidth,
+            fitWindow=fitWindow, fitWidth=fitWidth, export=export,
             aiAssist=aiAssist, zoomActions=zoomActions,
             fileMenuActions=(open_, opendir, save, saveAs, close, quit),
             tool=(),
@@ -419,6 +429,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             fitWindow,
             fitWidth,
             None,
+            export,
             aiAssist
         )
 
@@ -879,6 +890,20 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 self.scrollBars[Qt.Horizontal].value() + x_shift)
             self.scrollBars[Qt.Vertical].setValue(
                 self.scrollBars[Qt.Vertical].value() + y_shift)
+
+    def setExportMasks(self):
+        self.exportDialog.show()
+        self.curExportSetting = self.exportDialog.GetSelectedId()
+        print(self.exportDialog.GetSelectedId())
+        in_dir = self.res_path = os.path.dirname(self.filename)
+        if self.exportDialog.GetSelectedId() == 0:
+            out_dir = self.res_path + "_voc_instance"
+            print(out_dir)
+            exportVOC_semantic("labels.txt", in_dir, out_dir)
+        else:
+            out_dir = self.res_path + "_voc_semantic"
+            print(out_dir)
+            exportVOC_instance("labels.txt", in_dir, out_dir)
 
     def setAIAssist(self, value=True):
         if value:

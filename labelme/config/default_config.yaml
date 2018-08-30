@@ -41,4 +41,5 @@ shortcuts:
   edit_line_color: Ctrl+L
   edit_fill_color: Ctrl+Shift+L
 
+  export_masks: Ctrl+Shift+E
   ai_assist: Ctrl+Shift+A

@@ -4,6 +4,8 @@ from .canvas import Canvas
 
 from .color_dialog import ColorDialog
 
+from .export_dialog import ExportDialog
+
 from .escapable_qlist_widget import EscapableQListWidget
 
 from .label_dialog import LabelDialog

@@ -23,3 +23,6 @@ from .qt import struct
 from .qt import distance
 from .qt import distancetoline
 from .qt import fmtShortcut
+
+from .labelme2voc import exportVOC_semantic
+from .labelme2voc import exportVOC_instance
