@@ -17,7 +17,7 @@ def exportVOC_instance(labels_file, in_dir, out_dir):
     print(out_dir)
     if osp.exists(out_dir):
         print('Output directory already exists:', out_dir)
-        return 0
+        return 1
     os.makedirs(out_dir)
     os.makedirs(osp.join(out_dir, 'JPEGImages'))
     os.makedirs(osp.join(out_dir, 'SegmentationClass'))
@@ -111,7 +111,7 @@ def exportVOC_instance(labels_file, in_dir, out_dir):
 def exportVOC_semantic(labels_file, in_dir, out_dir):
     if osp.exists(out_dir):
         print('Output directory already exists:', out_dir)
-        return 0
+        return 1
     os.makedirs(out_dir)
     os.makedirs(osp.join(out_dir, 'JPEGImages'))
     os.makedirs(osp.join(out_dir, 'SegmentationClass'))
@@ -181,4 +181,3 @@ def exportVOC_semantic(labels_file, in_dir, out_dir):
     for i in range(m):
         writer.writerow(rgb_dict[i])
     fo.close()
-

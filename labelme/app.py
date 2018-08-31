@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*- 
 import functools
 import os.path
 import re
@@ -31,9 +32,6 @@ from labelme.widgets import ExportDialog
 from labelme.widgets import LabelQListWidget
 from labelme.widgets import ToolBar
 from labelme.widgets import ZoomWidget
-
-from labelme.utils import exportVOC_semantic
-from labelme.utils import exportVOC_instance
 
 
 # FIXME
@@ -89,8 +87,6 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             sort_labels=self._config['sort_labels'],
             show_text_field=self._config['show_label_text_field'],
         )
-
-        self.exportDialog = ExportDialog(parent=self)
 
         self.labelList = LabelQListWidget()
         self.lastOpenDir = None
@@ -892,18 +888,9 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 self.scrollBars[Qt.Vertical].value() + y_shift)
 
     def setExportMasks(self):
+        self.res_path = os.path.dirname(self.filename)
+        self.exportDialog = ExportDialog(parent=self, in_dir = self.res_path)
         self.exportDialog.show()
-        self.curExportSetting = self.exportDialog.GetSelectedId()
-        print(self.exportDialog.GetSelectedId())
-        in_dir = self.res_path = os.path.dirname(self.filename)
-        if self.exportDialog.GetSelectedId() == 0:
-            out_dir = self.res_path + "_voc_instance"
-            print(out_dir)
-            exportVOC_semantic("labels.txt", in_dir, out_dir)
-        else:
-            out_dir = self.res_path + "_voc_semantic"
-            print(out_dir)
-            exportVOC_instance("labels.txt", in_dir, out_dir)
 
     def setAIAssist(self, value=True):
         if value:
