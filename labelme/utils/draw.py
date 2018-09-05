@@ -25,6 +25,20 @@ def label_colormap(N=256):
     cmap = cmap.astype(np.float32) / 255
     return cmap
 
+def label_colormap_robotic():
+    cmap = np.zeros((3, 3))
+    cmap[0, 0] = 255
+    cmap[0, 1] = 255
+    cmap[0, 2] = 255
+    cmap[1, 0] = 0
+    cmap[1, 1] = 0
+    cmap[1, 2] = 0
+    cmap[2, 0] = 128
+    cmap[2, 1] = 128
+    cmap[2, 2] = 128
+    cmap = cmap.astype(np.float32) / 255
+    return cmap
+
 
 # similar function as skimage.color.label2rgb
 def label2rgb(lbl, img=None, n_labels=None, alpha=0.5, thresh_suppress=0):
@@ -40,8 +54,29 @@ def label2rgb(lbl, img=None, n_labels=None, alpha=0.5, thresh_suppress=0):
     if img is not None:
         img_gray = PIL.Image.fromarray(img).convert('LA')
         img_gray = np.asarray(img_gray.convert('RGB'))
-        # img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        # img_gray = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2RGB)
+        #img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        #img_gray = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2RGB)
+        lbl_viz = alpha * lbl_viz + (1 - alpha) * img_gray
+        lbl_viz = lbl_viz.astype(np.uint8)
+
+    return lbl_viz
+
+#do not use its own algorithm to create color--mzhu
+def label2rgb_robotic(lbl, img=None, n_labels=None, alpha=0.5, thresh_suppress=0):
+    if n_labels is None:
+        n_labels = len(np.unique(lbl))
+
+    cmap = label_colormap_robotic()
+    cmap = (cmap * 255).astype(np.uint8)
+
+    lbl_viz = cmap[lbl]
+    lbl_viz[lbl == -1] = (0, 0, 0)  # unlabeled
+
+    if img is not None:
+        img_gray = PIL.Image.fromarray(img).convert('LA')
+        img_gray = np.asarray(img_gray.convert('RGB'))
+        #img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        #img_gray = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2RGB)
         lbl_viz = alpha * lbl_viz + (1 - alpha) * img_gray
         lbl_viz = lbl_viz.astype(np.uint8)
 
@@ -100,5 +135,50 @@ def draw_label(label, img=None, label_names=None, colormap=None, csvFilePath=Non
     out = PIL.Image.open(f).resize(out_size, PIL.Image.BILINEAR).convert('RGB')
     out = np.asarray(out)
     if csvFilePath is not None:
-        return out,fc_converts[1]
+        return out,fc_converts
+    return out
+
+def draw_label_robotic(label, img=None, label_names=None, colormap=None):
+    import matplotlib.pyplot as plt
+    backend_org = plt.rcParams['backend']
+    plt.switch_backend('agg')
+
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0,
+                        wspace=0, hspace=0)
+    plt.margins(0, 0)
+    plt.gca().xaxis.set_major_locator(plt.NullLocator())
+    plt.gca().yaxis.set_major_locator(plt.NullLocator())
+
+    if label_names is None:
+        label_names = [str(l) for l in range(label.max() + 1)]
+
+    if colormap is None:
+        colormap = label_colormap(len(label_names))
+
+    label_viz = label2rgb_robotic(label, img, n_labels=len(label_names))
+    plt.imshow(label_viz)
+    plt.axis('off')
+
+    plt_handlers = []
+    plt_titles = []
+    for label_value, label_name in enumerate(label_names):
+        if label_value not in label:
+            continue
+        fc = colormap[label_value]
+        p = plt.Rectangle((0, 0), 1, 1, fc=fc)
+        plt_handlers.append(p)
+        plt_titles.append('{value}: {name}'
+                          .format(value=label_value, name=label_name))
+    plt.legend(plt_handlers, plt_titles, loc='lower right', framealpha=.5)
+
+    f = io.BytesIO()
+    plt.savefig(f, bbox_inches='tight', pad_inches=0)
+    plt.cla()
+    plt.close()
+
+    plt.switch_backend(backend_org)
+
+    out_size = (label_viz.shape[1], label_viz.shape[0])
+    out = PIL.Image.open(f).resize(out_size, PIL.Image.BILINEAR).convert('RGB')
+    out = np.asarray(out)
     return out
