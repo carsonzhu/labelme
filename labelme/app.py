@@ -1,5 +1,6 @@
 #-*- coding: UTF-8 -*- 
 import functools
+import os
 import os.path
 import re
 import warnings
@@ -888,11 +889,19 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 self.scrollBars[Qt.Vertical].value() + y_shift)
 
     def setExportMasks(self):
+        if self.filename == None:
+            QtWidgets.QMessageBox.warning(self,"warning","No images selected, invalid export!", QtWidgets.QMessageBox.Ok)
+            return
         self.res_path = os.path.dirname(self.filename)
         self.exportDialog = ExportDialog(parent=self, in_dir = self.res_path)
         self.exportDialog.show()
 
     def setAIAssist(self, value=True):
+        # not support windows(os.name == "nt"), for Linux/unix, os.name == "posix"
+        # AI assist needs GPU & tensorflow
+        if os.name == "nt":
+            QtWidgets.QMessageBox.information(self,"information","Currently this feature is not supported in Windows!", QtWidgets.QMessageBox.Ok)
+            return
         if value:
             self.canvas.setup_polyrnn()
         self.canvas.use_polyrnn = value
