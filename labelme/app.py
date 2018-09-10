@@ -293,7 +293,6 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         export = action('export masks', self.setExportMasks,
                         shortcuts['export_masks'], 'export',
                         'Export masks')
-        self.curExportSetting = 0
         aiAssist = action('AI assist', self.setAIAssist,
                           shortcuts['ai_assist'], 'objects',
                           'AI assist by Polygon RNN++',
@@ -894,7 +893,8 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             return
         self.res_path = os.path.dirname(self.filename)
         self.exportDialog = ExportDialog(parent=self, in_dir = self.res_path)
-        self.exportDialog.show()
+        #self.exportDialog.show()
+        self.exportDialog.exec_() #modal dialog
 
     def setAIAssist(self, value=True):
         # not support windows(os.name == "nt"), for Linux/unix, os.name == "posix"
