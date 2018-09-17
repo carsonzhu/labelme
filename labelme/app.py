@@ -902,6 +902,10 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         if os.name == "nt":
             QtWidgets.QMessageBox.information(self,"information","Currently this feature is not supported in Windows!", QtWidgets.QMessageBox.Ok)
             return
+        import tensorflow as tf
+        if tf.test.is_gpu_available() == False:
+            QtWidgets.QMessageBox.information(self,"information","Using GPU is recommended for this feature, but no available GPU can be found!", QtWidgets.QMessageBox.Ok)
+            return
         if value:
             self.canvas.setup_polyrnn()
         self.canvas.use_polyrnn = value

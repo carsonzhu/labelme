@@ -189,11 +189,12 @@ Also, there are pre-built executables in
 [the release section](https://github.com/wkentaro/labelme/releases).
 
 ```bash
-# Setup conda
-conda create --name labelme python=3.6
+# Setup conda(for Windows, recommend using python 3.6.0, for Ubuntu, recommend using python 2.7)
+conda create --name labelme python=3.6.0
 conda activate labelme
 
 # Build the standalone executable
+conda install pyqt
 pip install .
 pip install pyinstaller
 pyinstaller labelme.spec
