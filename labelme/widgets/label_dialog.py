@@ -94,7 +94,7 @@ class LabelDialog(QtWidgets.QDialog):
             text = text.trimmed()
         self.edit.setText(text)
 
-    def popUp(self, text=None, move=True):
+    def popUp(self, text=None, move=True, graspMode = None):
         # if text is None, the previous label in self.edit is kept
         if text is None:
             text = self.edit.text()
@@ -109,4 +109,6 @@ class LabelDialog(QtWidgets.QDialog):
         self.edit.setFocus(QtCore.Qt.PopupFocusReason)
         if move:
             self.move(QtGui.QCursor.pos())
+        if graspMode is not None:
+            return self.edit.text()
         return self.edit.text() if self.exec_() else None

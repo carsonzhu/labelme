@@ -203,7 +203,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             'Create Polygons',
             lambda: self.toggleDrawMode(False, createMode='polygon'),
             shortcuts['create_polygon'],
-            'objects',
+            'polygon',
             'Start drawing polygons',
             enabled=True,
         )
@@ -211,7 +211,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             'Create Rectangle',
             lambda: self.toggleDrawMode(False, createMode='rectangle'),
             shortcuts['create_rectangle'],
-            'objects',
+            'rectangle',
             'Start drawing rectangles',
             enabled=True,
         )
@@ -219,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             'Create Line',
             lambda: self.toggleDrawMode(False, createMode='line'),
             shortcuts['create_line'],
-            'objects',
+            'line',
             'Start drawing lines',
             enabled=True,
         )
@@ -227,7 +227,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             'Create Point',
             lambda: self.toggleDrawMode(False, createMode='point'),
             shortcuts['create_point'],
-            'objects',
+            'point',
             'Start drawing points',
             enabled=True,
         )
@@ -294,9 +294,12 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                         shortcuts['export_masks'], 'export',
                         'Export masks')
         aiAssist = action('AI assist', self.setAIAssist,
-                          shortcuts['ai_assist'], 'objects',
+                          shortcuts['ai_assist'], 'ai',
                           'AI assist by Polygon RNN++',
                           checkable=True, enabled=True)
+        labelMode = action('segment mode', self.setLableMode,
+                        shortcuts['labelMode'], 'seg_mode',
+                        'Switch label mode')
         # Group zoom controls into a list for easier toggling.
         zoomActions = (self.zoomWidget, zoomIn, zoomOut, zoomOrg,
                        fitWindow, fitWidth)
@@ -342,7 +345,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             createPointMode=createPointMode,
             shapeLineColor=shapeLineColor, shapeFillColor=shapeFillColor,
             zoom=zoom, zoomIn=zoomIn, zoomOut=zoomOut, zoomOrg=zoomOrg,
-            fitWindow=fitWindow, fitWidth=fitWidth, export=export,
+            fitWindow=fitWindow, fitWidth=fitWidth, export=export, labelMode=labelMode,
             aiAssist=aiAssist, zoomActions=zoomActions,
             fileMenuActions=(open_, opendir, save, saveAs, close, quit),
             tool=(),
@@ -426,7 +429,8 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             fitWidth,
             None,
             export,
-            aiAssist
+            aiAssist,
+            labelMode,
         )
 
         self.statusBar().showMessage('%s started.' % __appname__)
@@ -448,6 +452,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.otherData = None
         self.zoom_level = 100
         self.fit_window = False
+        self.enableGraspMode = False
 
         if filename is not None and os.path.isdir(filename):
             self.importDirImages(filename, load=False)
@@ -839,7 +844,11 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         text = None
         if items:
             text = items[0].text()
-        text = self.labelDialog.popUp(text)
+        # add graspMode parameter
+        if self.enableGraspMode:
+            text = self.labelDialog.popUp(text, graspMode=True)
+        else:
+            text = self.labelDialog.popUp(text)
         if text is not None and not self.validateLabel(text):
             self.errorMessage('Invalid label',
                               "Invalid label '{}' with validation type '{}'"
@@ -897,7 +906,6 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.exportDialog.exec_() #modal dialog
 
     def setAIAssist(self, value=True):
-        # not support windows(os.name == "nt"), for Linux/unix, os.name == "posix"
         # AI assist needs GPU & tensorflow
         if os.name == "nt":
             QtWidgets.QMessageBox.information(self,"information","Currently this feature is not supported in Windows!", QtWidgets.QMessageBox.Ok)
@@ -909,6 +917,24 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         if value:
             self.canvas.setup_polyrnn()
         self.canvas.use_polyrnn = value
+
+    def setLableMode(self):
+        if self.enableGraspMode == True:
+            self.enableGraspMode = False
+            self.actions.labelMode.setIcon(newIcon('seg_mode'))
+            text = 'segment mode'
+            self.actions.labelMode.setIconText(text.replace(' ', '\n'))
+        else:
+            self.enableGraspMode = True
+            text = 'grasping mode'
+            self.actions.labelMode.setIconText(text.replace(' ', '\n'))
+            self.actions.labelMode.setIcon(newIcon('grasp_mode'))
+            if not self.uniqLabelList.findItems('good', Qt.MatchExactly):
+                self.uniqLabelList.addItem('good')
+            if not self.uniqLabelList.findItems('bad', Qt.MatchExactly):
+                self.uniqLabelList.addItem('bad')
+            self.uniqLabelList.sortItems()
+            self.uniqLabelList.setCurrentRow(0)
 
     def setFitWindow(self, value=True):
         if value:

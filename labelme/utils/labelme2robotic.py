@@ -45,7 +45,7 @@ def exportMITP_grasp(labels_file, in_dir, out_dir):
 
     label_name_to_value = {'_background_': 0, 'bad': 1, 'good': 2}
 
-    colormap = np.array([(0,0,0),(1,0,0),(0,1,0)])
+    colormap = labelme.utils.label_colormap(255)
 
     for label_file in glob.glob(osp.join(in_dir, '*.json')):
         print('Generating dataset from:', label_file)
@@ -81,7 +81,7 @@ def exportMITP_grasp(labels_file, in_dir, out_dir):
             # class label
             labelme.utils.lblsave(out_clsp_file, cls)
             np.save(out_cls_file, cls)
-            clsv = labelme.utils.draw_label_robotic(
+            clsv = labelme.utils.draw_label(
                 cls, img, label_names, colormap=colormap)
             PIL.Image.fromarray(clsv).save(out_clsv_file)
     print('...... Finish exporting tasks for:', out_dir)

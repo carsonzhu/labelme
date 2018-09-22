@@ -515,7 +515,11 @@ class Canvas(QtWidgets.QWidget):
     def setup_polyrnn(self):
         if self._polyrnn is None:
             os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-            sys.path.insert(0, '../../src/polyrnn-pp/src')
+            #insert relative path doesn't work
+            #sys.path.insert(0, '../../src/polyrnn-pp/src')
+            cur_path = os.path.abspath(__file__)
+            src_path = os.path.join(os.path.dirname(cur_path), '../../src/polyrnn-pp/src')
+            sys.path.append(src_path)
             from inference import Inferencer
             self._polyrnn = Inferencer()
 
