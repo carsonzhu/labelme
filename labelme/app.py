@@ -943,25 +943,34 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.exportDialog.exec_() #modal dialog
 
     def setAIAssist(self, value=True):
-        # AI assist needs GPU & tensorflow
+        # AI assist needs GPU & tensorflow-gpu
         if os.name == "nt":
-            QtWidgets.QMessageBox.information(self,"information","Currently this feature is not supported in Windows!", QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.information(self,"information","Currently AI assist is not supported in Windows!", QtWidgets.QMessageBox.Ok)
+            self.actions.aiAssist.setChecked(False)
             return
         import tensorflow as tf
         if tf.test.is_gpu_available() == False:
-            QtWidgets.QMessageBox.information(self,"information","Using GPU is recommended for this feature, but no available GPU can be found!", QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.information(self,"information","Using GPU is recommended for AI assist, but no available GPU can be found!", QtWidgets.QMessageBox.Ok)
+            self.actions.aiAssist.setChecked(False)
+            return
+        if self.enableGraspMode:
+            QtWidgets.QMessageBox.information(self,"information","Currently system is in grasping mode, but AI assist is only uesd for segment mode!", QtWidgets.QMessageBox.Ok)
+            self.actions.aiAssist.setChecked(False)
             return
         if value:
             self.canvas.setup_polyrnn()
         self.canvas.use_polyrnn = value
 
     def setLableMode(self):
-        if self.enableGraspMode == True:
+        if self.enableGraspMode:
             self.enableGraspMode = False
             self.actions.labelMode.setIcon(newIcon('seg_mode'))
             text = 'segment mode'
             self.actions.labelMode.setIconText(text.replace(' ', '\n'))
         else:
+            if self.canvas.use_polyrnn:
+                QtWidgets.QMessageBox.information(self,"information","Currently AI assist has been enabled, need to disable it before switch to grasping mode!", QtWidgets.QMessageBox.Ok)
+                return
             self.enableGraspMode = True
             text = 'grasping mode'
             self.actions.labelMode.setIconText(text.replace(' ', '\n'))
