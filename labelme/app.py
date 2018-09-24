@@ -127,6 +127,8 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.fileSearch = QtWidgets.QLineEdit()
         self.fileSearch.setPlaceholderText('Search Filename')
         self.fileSearch.textChanged.connect(self.fileSearchChanged)
+        self.currentImageID = QtWidgets.QLabel()
+        self.currentImageID.setText('0/0')
         self.fileListWidget = QtWidgets.QListWidget()
         self.fileListWidget.itemSelectionChanged.connect(
             self.fileSelectionChanged
@@ -136,6 +138,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         fileListLayout.setSpacing(0)
         fileListLayout.addWidget(self.fileSearch)
         fileListLayout.addWidget(self.fileListWidget)
+        fileListLayout.addWidget(self.currentImageID)
         self.filedock = QtWidgets.QDockWidget(u'File List', self)
         self.filedock.setObjectName(u'Files')
         fileListWidget = QtWidgets.QWidget()
@@ -734,6 +737,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         currIndex = self.imageList.index(str(item.text()))
         if currIndex < len(self.imageList):
             filename = self.imageList[currIndex]
+            self.currentImageID.setText(str(currIndex+1) + '/' + str(self.fileListWidget.count()))
             if filename:
                 self.loadFile(filename)
 
