@@ -322,8 +322,16 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             'Shape &Fill Color', self.chshapeFillColor, icon='color',
             tip='Change the fill color for this specific shape', enabled=False)
 
-        labels = self.dock.toggleViewAction()
-        labels.setText('Show/Hide Label Panel')
+        fill_drawing = action(
+            'Fill Drawing Polygon',
+            lambda x: self.canvas.setFillDrawing(x),
+            None,
+            'color',
+            'Fill polygon while drawing',
+            checkable=True,
+            enabled=True,
+        )
+        fill_drawing.setChecked(True)
 
         # Lavel list context menu.
         labelMenu = QtWidgets.QMenu()
@@ -394,10 +402,24 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                                      save, saveAs, close, None, quit))
         addActions(self.menus.help, (help,))
         addActions(self.menus.view, (
-            labels, None,
-            hideAll, showAll, None,
-            zoomIn, zoomOut, zoomOrg, None,
-            fitWindow, fitWidth))
+            self.flag_dock.toggleViewAction(),
+            self.labelsdock.toggleViewAction(),
+            self.dock.toggleViewAction(),
+            self.filedock.toggleViewAction(),
+            None,
+            fill_drawing,
+            None,
+            hideAll,
+            showAll,
+            None,
+            zoomIn,
+            zoomOut,
+            zoomOrg,
+            None,
+            fitWindow,
+            fitWidth,
+            None,
+        ))
 
         self.menus.file.aboutToShow.connect(self.updateFileMenu)
 
@@ -458,6 +480,10 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             self.importDirImages(filename, load=False)
         else:
             self.filename = filename
+
+        if config['file_search']:
+            self.fileSearch.setText(config['file_search'])
+            self.fileSearchChanged()
 
         # XXX: Could be completely declarative.
         # Restore application settings.
@@ -805,6 +831,13 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 flags=flags,
             )
             self.labelFile = lf
+            items = self.fileListWidget.findItems(
+                self.imagePath, Qt.MatchExactly
+            )
+            if len(items) > 0:
+                if len(items) != 1:
+                    raise RuntimeError('There are duplicate files.')
+                items[0].setCheckState(Qt.Checked)
             # disable allows next and previous image to proceed
             # self.filename = filename
             return True
@@ -960,6 +993,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 self.fileListWidget.currentRow() !=
                 self.imageList.index(filename)):
             self.fileListWidget.setCurrentRow(self.imageList.index(filename))
+            self.fileListWidget.repaint()
             return
 
         self.resetState()
