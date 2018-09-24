@@ -929,12 +929,13 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             text = 'grasping mode'
             self.actions.labelMode.setIconText(text.replace(' ', '\n'))
             self.actions.labelMode.setIcon(newIcon('grasp_mode'))
-            if not self.uniqLabelList.findItems('good', Qt.MatchExactly):
-                self.uniqLabelList.addItem('good')
-            if not self.uniqLabelList.findItems('bad', Qt.MatchExactly):
-                self.uniqLabelList.addItem('bad')
-            self.uniqLabelList.sortItems()
+            self.uniqLabelList.clear()
+            #if not self.uniqLabelList.findItems('good', Qt.MatchExactly):
+            self.uniqLabelList.insertItem(0, 'good')
             self.uniqLabelList.setCurrentRow(0)
+            #if not self.uniqLabelList.findItems('bad', Qt.MatchExactly):
+            self.uniqLabelList.addItem('bad')
+            self.uniqLabelList.sortItems()
 
     def setFitWindow(self, value=True):
         if value:
