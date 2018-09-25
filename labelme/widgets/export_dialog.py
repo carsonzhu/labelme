@@ -27,8 +27,8 @@ class ExportDialog(QtWidgets.QDialog):
 
         self.instance_seg = QtWidgets.QRadioButton('VOC-like dataset for instance segmentation')
         self.semantic_seg = QtWidgets.QRadioButton('VOC-like dataset for semantic segmentation')
-        self.grasp_seg = QtWidgets.QRadioButton('MIT-Princeton\'s grasping dataset')
-        self.suction_seg = QtWidgets.QRadioButton('MIT-Princeton\'s suction dataset')
+        self.grasp_seg = QtWidgets.QRadioButton('parallel-jaw-grasping dataset')
+        self.suction_seg = QtWidgets.QRadioButton('suction-based-grasping dataset')
 
         self.instance_seg.setChecked(True)
         layout.addWidget(self.instance_seg)

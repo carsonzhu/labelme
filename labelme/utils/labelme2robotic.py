@@ -12,16 +12,17 @@ import PIL.Image
 
 import labelme
 
-
+# Combined the format of Cornell's and MIT-Princeton's dataset actually 
 def exportMITP_grasp(labels_file, in_dir, out_dir):
     if osp.exists(out_dir):
         print('Output directory already exists:', out_dir)
         return 1
     os.makedirs(out_dir)
     os.makedirs(osp.join(out_dir, 'JPEGImages'))
-    os.makedirs(osp.join(out_dir, 'MITPrincetonGraspingClass'))
-    os.makedirs(osp.join(out_dir, 'MITPrincetonGraspingClassPNG'))
-    os.makedirs(osp.join(out_dir, 'MITPrincetonGraspingClassVisualization'))
+    os.makedirs(osp.join(out_dir, 'GraspingClass'))
+    os.makedirs(osp.join(out_dir, 'GraspingClassPNG'))
+    os.makedirs(osp.join(out_dir, 'GraspingClassCoordinate'))
+    os.makedirs(osp.join(out_dir, 'GraspingClassVisualization'))
     print('Creating dataset:', out_dir)
 
     class_names = []
@@ -54,11 +55,15 @@ def exportMITP_grasp(labels_file, in_dir, out_dir):
             out_img_file = osp.join(
                 out_dir, 'JPEGImages', base + '.jpg')
             out_cls_file = osp.join(
-                out_dir, 'MITPrincetonGraspingClass', base + '.npy')
+                out_dir, 'GraspingClass', base + '.npy')
             out_clsp_file = osp.join(
-                out_dir, 'MITPrincetonGraspingClassPNG', base + '.png')
+                out_dir, 'GraspingClassPNG', base + '.png')
+            out_label_file_good = osp.join(
+                out_dir, 'GraspingClassCoordinate', base + '.good.txt')
+            out_label_file_bad = osp.join(
+                out_dir, 'GraspingClassCoordinate', base + '.bad.txt')
             out_clsv_file = osp.join(
-                out_dir, 'MITPrincetonGraspingClassVisualization', base + '.jpg')
+                out_dir, 'GraspingClassVisualization', base + '.jpg')
 
             data = json.load(f)
 
@@ -66,13 +71,26 @@ def exportMITP_grasp(labels_file, in_dir, out_dir):
             img = np.asarray(PIL.Image.open(img_file))
             PIL.Image.fromarray(img).save(out_img_file)
 
-            cls, ins = labelme.utils.shapes_to_label(
+            cls, out_points_good, out_points_bad = labelme.utils.shapes_to_label(
                 img_shape=img.shape,
                 shapes=data['shapes'],
                 label_name_to_value=label_name_to_value,
-                type='instance',
+                savePoints2Txt=True
             )
-            ins[cls == -1] = 0  # ignore it.
+
+            with open(out_label_file_good, 'w') as f:
+                points_str=[]
+                for point in out_points_good:
+                    str_tmp = str(point[0]) + ' ' + str(point[1])
+                    points_str.append(str_tmp)
+                f.writelines('\n'.join(points_str))
+
+            with open(out_label_file_bad, 'w') as f:
+                points_str=[]
+                for point in out_points_bad:
+                    str_tmp = str(point[0]) + ' ' + str(point[1])
+                    points_str.append(str_tmp)
+                f.writelines('\n'.join(points_str))
 
             label_names  =[None] * (max(label_name_to_value.values()) + 1 )
             for name, value in label_name_to_value.items():
@@ -92,9 +110,9 @@ def exportMITP_suction(labels_file, in_dir, out_dir):
         return 1
     os.makedirs(out_dir)
     os.makedirs(osp.join(out_dir, 'JPEGImages'))
-    os.makedirs(osp.join(out_dir, 'MITPrincetonSuctionClass'))
-    os.makedirs(osp.join(out_dir, 'MITPrincetonSuctionClassPNG'))
-    os.makedirs(osp.join(out_dir, 'MITPrincetonSuctionClassVisualization'))
+    os.makedirs(osp.join(out_dir, 'SuctionClass'))
+    os.makedirs(osp.join(out_dir, 'SuctionClassPNG'))
+    os.makedirs(osp.join(out_dir, 'SuctionClassVisualization'))
     print('Creating dataset:', out_dir)
 
     class_names = []
@@ -127,11 +145,11 @@ def exportMITP_suction(labels_file, in_dir, out_dir):
             out_img_file = osp.join(
                 out_dir, 'JPEGImages', base + '.jpg')
             out_cls_file = osp.join(
-                out_dir, 'MITPrincetonSuctionClass', base + '.npy')
+                out_dir, 'SuctionClass', base + '.npy')
             out_clsp_file = osp.join(
-                out_dir, 'MITPrincetonSuctionClassPNG', base + '.png')
+                out_dir, 'SuctionClassPNG', base + '.png')
             out_clsv_file = osp.join(
-                out_dir, 'MITPrincetonSuctionClassVisualization', base + '.jpg')
+                out_dir, 'SuctionClassVisualization', base + '.jpg')
 
             data = json.load(f)
 
