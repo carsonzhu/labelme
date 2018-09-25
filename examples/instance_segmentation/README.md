@@ -6,11 +6,11 @@
 labelme data_annotated --labels labels.txt --nodata
 ```
 
-![](.readme/annotation.jpg)
+![](.readme/annotation.png)
 
 ## Convert to VOC-like Dataset
 
-![](.readme/convert.jpg)
+![](.readme/convert.png)
 
 ```bash
 # It generates:
