@@ -28,6 +28,8 @@ It is written in Python and uses Qt for its graphical interface.
 - [x] Video annotation. ([video annotation](https://github.com/wkentaro/labelme/blob/master/examples/video_annotation))
 - [x] GUI customization (predefined labels / flags, auto-saving, label validation, etc). ([#144](https://github.com/wkentaro/labelme/pull/144))
 - [x] Exporting VOC-like dataset for semantic/instance segmentation. ([semantic segmentation](https://github.com/wkentaro/labelme/blob/master/examples/semantic_segmentation), [instance segmentation](https://github.com/wkentaro/labelme/blob/master/examples/instance_segmentation))
+- [x] AI assist for semi-automatic segmentation labeling.([polyrnn](https://github.com/carsonzhu/labelme/tree/carsonzhu-polyrnn-pp/examples/polyrnn))
+- [x] Exporting grasping dataset for Cornell's/MIT-Princeton's format. ([grasp](https://github.com/carsonzhu/labelme/tree/carsonzhu-polyrnn-pp/examples/grasp), [suction](https://github.com/carsonzhu/labelme/tree/carsonzhu-polyrnn-pp/examples/suction))
 
 
 
@@ -178,6 +180,7 @@ cd labelme
 # Install anaconda3 and labelme
 curl -L https://github.com/wkentaro/dotfiles/raw/master/local/bin/install_anaconda3.sh | bash -s .
 source .anaconda3/bin/activate
+conda install pyqt
 pip install -e .
 ```
 
@@ -204,5 +207,4 @@ dist/labelme --version
 
 ## Acknowledgement
 
-This repo is the fork of [mpitid/pylabelme](https://github.com/mpitid/pylabelme),
-whose development has already stopped.
+This repo is the fork of [wkentaro/labelme](https://github.com/wkentaro/labelme).

@@ -10,17 +10,18 @@ labelme data_annotated --labels labels.txt --nodata
 
 ## Convert to VOC-like Dataset
 
+![](.readme/convert.jpg)
+
 ```bash
 # It generates:
-#   - data_dataset_voc/JPEGImages
-#   - data_dataset_voc/SegmentationClass
-#   - data_dataset_voc/SegmentationClassVisualization
-#   - data_dataset_voc/SegmentationObject
-#   - data_dataset_voc/SegmentationObjectVisualization
-./labelme2voc.py labels.txt data_annotated data_dataset_voc
+#   - data_annotated_voc_instance/JPEGImages
+#   - data_annotated_voc_instance/SegmentationClass
+#   - data_annotated_voc_instance/SegmentationClassVisualization
+#   - data_annotated_voc_instance/SegmentationObject
+#   - data_annotated_voc_instance/SegmentationObjectVisualization
 ```
 
-<img src="data_dataset_voc/JPEGImages/2011_000003.jpg" width="33%" /> <img src="data_dataset_voc/SegmentationClassVisualization/2011_000003.jpg" width="33%" /> <img src="data_dataset_voc/SegmentationObjectVisualization/2011_000003.jpg" width="33%" />  
+<img src="data_annotated_voc_instance/JPEGImages/2011_000003.jpg" width="33%" /> <img src="data_annotated_voc_instance/SegmentationClassVisualization/2011_000003.jpg" width="33%" /> <img src="data_annotated_voc_instance/SegmentationObjectVisualization/2011_000003.jpg" width="33%" />  
 Fig 1. JPEG image (left), JPEG class label visualization (center), JPEG instance label visualization (right)
 
 
@@ -29,8 +30,8 @@ Note that the label file contains only very low label values (ex. `0, 4, 14`), a
 You can see the label PNG file by following.
 
 ```bash
-labelme_draw_label_png data_dataset_voc/SegmentationClassPNG/2011_000003.png   # left
-labelme_draw_label_png data_dataset_voc/SegmentationObjectPNG/2011_000003.png  # right
+labelme_draw_label_png data_annotated_voc_instance/SegmentationClassPNG/2011_000003.png   # left
+labelme_draw_label_png data_annotated_voc_instance/SegmentationObjectPNG/2011_000003.png  # right
 ```
 
 <img src=".readme/draw_label_png_class.jpg" width="33%" /> <img src=".readme/draw_label_png_object.jpg" width="33%" />

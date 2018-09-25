@@ -1,0 +1,24 @@
+# Suction Labeling Example
+
+## Annotation
+
+```bash
+labelme data_annotated --labels labels.txt --nodata
+```
+
+![](.readme/annotation.png)
+
+## Convert to suction Dataset
+
+![](.readme/convert.png)
+
+```bash
+# It generates:
+#   - data_annotated_suction/JPEGImages
+#   - data_annotated_suction/MITPrincetonSuctionClass
+#   - data_annotated_suction/MITPrincetonSuctionClassPNG
+#   - data_annotated_suction/MITPrincetonSuctionClassVisualization
+```
+
+<img src="data_dataset_suction/JPEGImages/2018_000002.jpg" width="33%" /> <img src="data_dataset_suction/MITPrincetonSuctionClassVisualization/2018_000002.jpg" width="33%" /> <img src="data_dataset_suction/MITPrincetonSuctionClassPNG/2018_000002.png" width="33%" />  
+Fig 1. JPEG image (left), JPEG suction label visualization (center), PNG suction label (right)
