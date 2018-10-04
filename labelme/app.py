@@ -803,6 +803,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             self.flag_widget.addItem(item)
 
     def saveLabels(self, filename):
+        self.labelList.sortItems() #sort items to make sure draw grasping label work well(bad first, then good)-mzhu
         lf = LabelFile()
 
         def format_shape(s):

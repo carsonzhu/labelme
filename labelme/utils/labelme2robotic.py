@@ -75,6 +75,7 @@ def exportMITP_grasp(labels_file, in_dir, out_dir):
                 img_shape=img.shape,
                 shapes=data['shapes'],
                 label_name_to_value=label_name_to_value,
+                type='grasping',
                 savePoints2Txt=True
             )
 
@@ -136,7 +137,7 @@ def exportMITP_suction(labels_file, in_dir, out_dir):
 
     label_name_to_value = {'_background_': 0, 'bad': 1, 'good': 2}
 
-    colormap = np.array([(1,1,1),(0,0,0),(0.50196078,0.50196078,0.50196078)])
+    colormap = labelme.utils.label_colormap_robotic()
 
     for label_file in glob.glob(osp.join(in_dir, '*.json')):
         print('Generating dataset from:', label_file)
@@ -161,6 +162,7 @@ def exportMITP_suction(labels_file, in_dir, out_dir):
                 img_shape=img.shape,
                 shapes=data['shapes'],
                 label_name_to_value=label_name_to_value,
+                type='grasping',
             )
 
             label_names  =[None] * (max(label_name_to_value.values()) + 1 )

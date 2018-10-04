@@ -21,7 +21,7 @@ def mask_to_bbox(mask):
 
 
 def shapes_to_label(img_shape, shapes, label_name_to_value, type='class', savePoints2Txt=False):
-    assert type in ['class', 'instance']
+    assert type in ['class', 'instance', 'grasping']
 
     cls = np.zeros(img_shape[:2], dtype=np.int32)
     if type == 'instance':
@@ -32,7 +32,7 @@ def shapes_to_label(img_shape, shapes, label_name_to_value, type='class', savePo
     for shape in shapes:
         polygons = shape['points']
         label = shape['label']
-        if type == 'class':
+        if type == 'class' or type == 'grasping':
             cls_name = label
         elif type == 'instance':
             cls_name = label.split('-')[0]
