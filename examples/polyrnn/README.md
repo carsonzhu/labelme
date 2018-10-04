@@ -8,6 +8,8 @@
 
 ```bash
 ./install_polyrnn.sh
-pip install -e .
+cd src/polyrnn-pp
+# Download the pre-trained models and graphs(These models were trained on the Cityscapes Dataset)
+./models/download_and_unpack.sh
 ```
 
