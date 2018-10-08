@@ -25,6 +25,7 @@ def exportVOC_instance(labels_file, in_dir, out_dir):
     os.makedirs(osp.join(out_dir, 'SegmentationObject'))
     os.makedirs(osp.join(out_dir, 'SegmentationObjectPNG'))
     os.makedirs(osp.join(out_dir, 'SegmentationObjectVisualization'))
+    os.makedirs(osp.join(out_dir, 'bbox_detection_labels'))
     print('Creating dataset:', out_dir)
 
     class_names = []
@@ -68,6 +69,8 @@ def exportVOC_instance(labels_file, in_dir, out_dir):
                 out_dir, 'SegmentationObjectPNG', base + '.png')
             out_insv_file = osp.join(
                 out_dir, 'SegmentationObjectVisualization', base + '.jpg')
+            detection_label_file = osp.join(
+                out_dir, 'bbox_detection_labels', base + '.csv')
 
             data = json.load(f)
 
@@ -75,13 +78,21 @@ def exportVOC_instance(labels_file, in_dir, out_dir):
             img = np.asarray(PIL.Image.open(img_file))
             PIL.Image.fromarray(img).save(out_img_file)
 
-            cls, ins = labelme.utils.shapes_to_label(
+            cls, ins, out_bbox_points = labelme.utils.shapes_to_label(
                 img_shape=img.shape,
                 shapes=data['shapes'],
                 label_name_to_value=class_name_to_id,
                 type='instance',
             )
             ins[cls == -1] = 0  # ignore it.
+
+            #save bounding box to csv file for detection labels
+            f = open(detection_label_file, 'w')
+            writer=csv.writer(f)
+            m = len(out_bbox_points)
+            for i in range(m):
+                writer.writerow(out_bbox_points[i])
+            f.close()
 
             # class label
             labelme.utils.lblsave(out_clsp_file, cls)
@@ -118,6 +129,7 @@ def exportVOC_semantic(labels_file, in_dir, out_dir):
     os.makedirs(osp.join(out_dir, 'SegmentationClass'))
     os.makedirs(osp.join(out_dir, 'SegmentationClassPNG'))
     os.makedirs(osp.join(out_dir, 'SegmentationClassVisualization'))
+    os.makedirs(osp.join(out_dir, 'bbox_detection_labels'))
     print('Creating dataset:', out_dir)
 
     class_names = []
@@ -154,6 +166,8 @@ def exportVOC_semantic(labels_file, in_dir, out_dir):
                 out_dir, 'SegmentationClassPNG', base + '.png')
             out_viz_file = osp.join(
                 out_dir, 'SegmentationClassVisualization', base + '.jpg')
+            detection_label_file = osp.join(
+                out_dir, 'bbox_detection_labels', base + '.csv')
 
             data = json.load(f)
 
@@ -161,11 +175,20 @@ def exportVOC_semantic(labels_file, in_dir, out_dir):
             img = np.asarray(PIL.Image.open(img_file))
             PIL.Image.fromarray(img).save(out_img_file)
 
-            lbl = labelme.utils.shapes_to_label(
+            lbl,out_bbox_points = labelme.utils.shapes_to_label(
                 img_shape=img.shape,
                 shapes=data['shapes'],
                 label_name_to_value=class_name_to_id,
             )
+
+            #save bounding box to csv file for detection labels
+            f = open(detection_label_file, 'w')
+            writer=csv.writer(f)
+            m = len(out_bbox_points)
+            for i in range(m):
+                writer.writerow(out_bbox_points[i])
+            f.close()
+
             labelme.utils.lblsave(out_png_file, lbl)
 
             np.save(out_lbl_file, lbl)

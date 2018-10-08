@@ -76,7 +76,7 @@ def exportMITP_grasp(labels_file, in_dir, out_dir):
                 shapes=data['shapes'],
                 label_name_to_value=label_name_to_value,
                 type='grasping',
-                savePoints2Txt=True
+                saveGrasplbl2txt=True
             )
 
             with open(out_label_file_good, 'w') as f:
