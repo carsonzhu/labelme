@@ -6,6 +6,8 @@ from .color_dialog import ColorDialog
 
 from .export_dialog import ExportDialog
 
+from .comments_editor import QCommentsEditor
+
 from .escapable_qlist_widget import EscapableQListWidget
 
 from .label_dialog import LabelDialog

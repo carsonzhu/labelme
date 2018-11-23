@@ -28,6 +28,7 @@ from labelme.utils import struct
 from labelme.widgets import Canvas
 from labelme.widgets import ColorDialog
 from labelme.widgets import EscapableQListWidget
+from labelme.widgets import QCommentsEditor
 from labelme.widgets import LabelDialog
 from labelme.widgets import ExportDialog
 from labelme.widgets import LabelQListWidget
@@ -91,6 +92,15 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
 
         self.labelList = LabelQListWidget()
         self.lastOpenDir = None
+
+        # add comments area
+        self.commentsArea = QCommentsEditor()
+        self.commentsArea.setToolTip(
+            "Write comments here to audit the labeling image. ")
+        self.commentsdock = QtWidgets.QDockWidget(u'Comments', self)
+        self.commentsdock.setObjectName(u'Comments')
+        self.commentsdock.setWidget(self.commentsArea)
+        # end add comments area
 
         self.flag_dock = self.flag_widget = None
         self.flag_dock = QtWidgets.QDockWidget('Flags', self)
@@ -169,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
 
         self.setCentralWidget(scrollArea)
 
+        self.addDockWidget(Qt.RightDockWidgetArea, self.commentsdock)
         self.addDockWidget(Qt.RightDockWidgetArea, self.flag_dock)
         self.addDockWidget(Qt.RightDockWidgetArea, self.labelsdock)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dock)
