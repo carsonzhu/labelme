@@ -11,6 +11,7 @@ from .shape import polygons_to_mask
 from .shape import mask_to_bbox
 from .shape import shapes_to_label
 
+from .draw import draw_instances
 from .draw import draw_label
 from .draw import draw_label_robotic
 from .draw import label_colormap
@@ -29,5 +30,6 @@ from .qt import fmtShortcut
 
 from .labelme2voc import exportVOC_semantic
 from .labelme2voc import exportVOC_instance
+from .labelme2voc import exportVOC_detection
 from .labelme2robotic import exportMITP_grasp
 from .labelme2robotic import exportMITP_suction

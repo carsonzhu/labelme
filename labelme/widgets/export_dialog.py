@@ -8,6 +8,7 @@ from labelme.utils import exportVOC_semantic
 from labelme.utils import exportVOC_instance
 from labelme.utils import exportMITP_grasp
 from labelme.utils import exportMITP_suction
+from labelme.utils import exportVOC_detection
 
 QT5 = QT_VERSION[0] == '5'  # NOQA
 
@@ -19,7 +20,7 @@ class ExportDialog(QtWidgets.QDialog):
     def __init__(self, parent , in_dir):
         super(ExportDialog, self).__init__(parent)
 
-        self.setWindowTitle("Export Masks Dialog")
+        self.setWindowTitle("Export Dialog")
 
         layout = QtWidgets.QVBoxLayout()
 
@@ -27,20 +28,23 @@ class ExportDialog(QtWidgets.QDialog):
 
         self.instance_seg = QtWidgets.QRadioButton('VOC-like dataset for instance segmentation')
         self.semantic_seg = QtWidgets.QRadioButton('VOC-like dataset for semantic segmentation')
-        self.grasp_seg = QtWidgets.QRadioButton('parallel-jaw-grasping dataset')
-        self.suction_seg = QtWidgets.QRadioButton('suction-based-grasping dataset')
+        self.grasp_exp = QtWidgets.QRadioButton('parallel-jaw-grasping dataset')
+        self.suction_exp = QtWidgets.QRadioButton('suction-based-grasping dataset')
+        self.detection_exp = QtWidgets.QRadioButton('VOC-like dataset for object detection')
 
         self.instance_seg.setChecked(True)
         layout.addWidget(self.instance_seg)
         layout.addWidget(self.semantic_seg)
-        layout.addWidget(self.grasp_seg)
-        layout.addWidget(self.suction_seg)
+        layout.addWidget(self.grasp_exp)
+        layout.addWidget(self.suction_exp)
+        layout.addWidget(self.detection_exp)
 
         self.button_group = QtWidgets.QButtonGroup()
         self.button_group.addButton(self.instance_seg, 0)
         self.button_group.addButton(self.semantic_seg, 1)
-        self.button_group.addButton(self.grasp_seg, 2)
-        self.button_group.addButton(self.suction_seg, 3)
+        self.button_group.addButton(self.grasp_exp, 2)
+        self.button_group.addButton(self.suction_exp, 3)
+        self.button_group.addButton(self.detection_exp, 4)
 
         # buttons
         self.buttonBox = bb = QtWidgets.QDialogButtonBox(
@@ -62,6 +66,7 @@ class ExportDialog(QtWidgets.QDialog):
         out_dir_semantic = self.in_directory + "_voc_semantic"
         out_dir_grasp = self.in_directory + "_grasp"
         out_dir_suction = self.in_directory + "_suction"
+        out_dir_detection = self.in_directory + "_detection"
         labels_file = osp.join(osp.join(self.in_directory, ".."), "labels.txt")
         if osp.exists(labels_file) == False:
             print('labels_file does not exist:', labels_file)
@@ -99,6 +104,14 @@ class ExportDialog(QtWidgets.QDialog):
                     print("...... Regenerate suction-based grasping datasets ......")
                     shutil.rmtree(out_dir_suction, ignore_errors=True)
                     exportMITP_suction(labels_file, self.in_directory, out_dir_suction)
+        elif self.button_group.checkedId() == 4:
+            isExist = exportVOC_detection(labels_file, self.in_directory, out_dir_detection)
+            if isExist:
+                button = QtWidgets.QMessageBox.question(self,"Question","Output directory already exists: " + out_dir_detection + " , Do you want to replace the dirctory？", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+                if button == QtWidgets.QMessageBox.Yes:
+                    print("...... Regenerate VOC-like datasets for object detection ......")
+                    shutil.rmtree(out_dir_detection, ignore_errors=True)
+                    exportVOC_detection(labels_file, self.in_directory, out_dir_detection)
         
     def cancel_action(self):
         self.reject()
