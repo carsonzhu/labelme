@@ -98,6 +98,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.commentsArea.setToolTip(
             "Write comments here to audit the labeling image. ")
         self.commentsdock = QtWidgets.QDockWidget(u'Comments', self)
+        self.commentsArea.textChanged.connect(self.updateCommentsContent)
         self.commentsdock.setObjectName(u'Comments')
         self.commentsdock.setWidget(self.commentsArea)
         # end add comments area
@@ -550,6 +551,9 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
 
     # Support Functions
 
+    def updateCommentsContent(self):
+        self.actions.save.setEnabled(True)
+
     def noShapes(self):
         return not self.labelList.itemsToShapes
 
@@ -867,11 +871,12 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 filename=filename,
                 shapes=shapes,
                 imagePath=imagePath,
-                imageData=imageData,
                 lineColor=self.lineColor.getRgb(),
                 fillColor=self.fillColor.getRgb(),
                 otherData=self.otherData,
                 flags=flags,
+                comments=self.commentsArea.toPlainText(),
+                imageData=imageData,
             )
             self.labelFile = lf
             items = self.fileListWidget.findItems(
@@ -1086,6 +1091,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             self.lineColor = QtGui.QColor(*self.labelFile.lineColor)
             self.fillColor = QtGui.QColor(*self.labelFile.fillColor)
             self.otherData = self.labelFile.otherData
+            self.commentsArea.setPlainText(self.labelFile.comments)
         else:
             # Load image:
             # read data first and store for saving into label file.

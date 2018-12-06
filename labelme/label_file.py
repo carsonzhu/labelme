@@ -19,6 +19,7 @@ class LabelFile(object):
 
     def __init__(self, filename=None):
         self.shapes = ()
+        self.comments = None
         self.imagePath = None
         self.imageData = None
         if filename is not None:
@@ -33,6 +34,7 @@ class LabelFile(object):
             'fillColor',
             'shapes',  # polygonal annotations
             'flags',   # image level flags
+            'comments',
         ]
         try:
             with open(filename, 'rb' if PY2 else 'r') as f:
@@ -46,6 +48,7 @@ class LabelFile(object):
                 with open(imagePath, 'rb') as f:
                     imageData = f.read()
             flags = data.get('flags')
+            comments = data['comments']
             imagePath = data['imagePath']
             lineColor = data['lineColor']
             fillColor = data['fillColor']
@@ -70,10 +73,11 @@ class LabelFile(object):
         self.fillColor = fillColor
         self.filename = filename
         self.otherData = otherData
+        self.comments = comments
 
     def save(self, filename, shapes, imagePath, imageData=None,
              lineColor=None, fillColor=None, otherData=None,
-             flags=None):
+             flags=None, comments=None):
         if imageData is not None:
             imageData = base64.b64encode(imageData).decode('utf-8')
         if otherData is None:
@@ -88,6 +92,7 @@ class LabelFile(object):
             fillColor=fillColor,
             imagePath=imagePath,
             imageData=imageData,
+            comments=comments,
         )
         for key, value in otherData.items():
             data[key] = value
