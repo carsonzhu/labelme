@@ -229,6 +229,14 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             'Start drawing rectangles',
             enabled=True,
         )
+        createCircleMode = action(
+            'Create Circle',
+            lambda: self.toggleDrawMode(False, createMode='circle'),
+            shortcuts['create_circle'],
+            'circle',
+            'Start drawing circles',
+            enabled=True,
+        )
         createLineMode = action(
             'Create Line',
             lambda: self.toggleDrawMode(False, createMode='line'),
@@ -363,6 +371,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             addPoint=addPoint,
             createMode=createMode, editMode=editMode,
             createRectangleMode=createRectangleMode,
+            createCircleMode=createCircleMode,
             createLineMode=createLineMode,
             createPointMode=createPointMode,
             shapeLineColor=shapeLineColor, shapeFillColor=shapeFillColor,
@@ -377,6 +386,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             menu=(
                 createMode,
                 createRectangleMode,
+                createCircleMode,
                 createLineMode,
                 createPointMode,
                 editMode,
@@ -393,6 +403,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                 close,
                 createMode,
                 createRectangleMode,
+                createCircleMode,
                 createLineMode,
                 createPointMode,
                 editMode,
@@ -550,6 +561,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         actions = (
             self.actions.createMode,
             self.actions.createRectangleMode,
+            self.actions.createCircleMode,
             self.actions.createLineMode,
             self.actions.createPointMode,
             self.actions.editMode,
@@ -574,6 +586,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.actions.save.setEnabled(False)
         self.actions.createMode.setEnabled(True)
         self.actions.createRectangleMode.setEnabled(True)
+        self.actions.createCircleMode.setEnabled(True)
         self.actions.createLineMode.setEnabled(True)
         self.actions.createPointMode.setEnabled(True)
         title = __appname__
@@ -646,29 +659,40 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         if edit:
             self.actions.createMode.setEnabled(True)
             self.actions.createRectangleMode.setEnabled(True)
+            self.actions.createCircleMode.setEnabled(True)
             self.actions.createLineMode.setEnabled(True)
             self.actions.createPointMode.setEnabled(True)
         else:
             if createMode == 'polygon':
                 self.actions.createMode.setEnabled(False)
                 self.actions.createRectangleMode.setEnabled(True)
+                self.actions.createCircleMode.setEnabled(True)
                 self.actions.createLineMode.setEnabled(True)
                 self.actions.createPointMode.setEnabled(True)
             elif createMode == 'rectangle':
                 self.actions.createMode.setEnabled(True)
                 self.actions.createRectangleMode.setEnabled(False)
+                self.actions.createCircleMode.setEnabled(True)
                 self.actions.createLineMode.setEnabled(True)
                 self.actions.createPointMode.setEnabled(True)
             elif createMode == 'line':
                 self.actions.createMode.setEnabled(True)
                 self.actions.createRectangleMode.setEnabled(True)
+                self.actions.createCircleMode.setEnabled(True)
                 self.actions.createLineMode.setEnabled(False)
                 self.actions.createPointMode.setEnabled(True)
             elif createMode == 'point':
                 self.actions.createMode.setEnabled(True)
                 self.actions.createRectangleMode.setEnabled(True)
+                self.actions.createCircleMode.setEnabled(True)
                 self.actions.createLineMode.setEnabled(True)
                 self.actions.createPointMode.setEnabled(False)
+            elif createMode == 'circle':
+                self.actions.createMode.setEnabled(True)
+                self.actions.createRectangleMode.setEnabled(True)
+                self.actions.createCircleMode.setEnabled(False)
+                self.actions.createLineMode.setEnabled(True)
+                self.actions.createPointMode.setEnabled(True)
             else:
                 raise ValueError('Unsupported createMode: %s' % createMode)
         self.actions.editMode.setEnabled(not edit)

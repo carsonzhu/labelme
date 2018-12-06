@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import PIL.Image
 import PIL.ImageDraw
@@ -5,11 +6,18 @@ import PIL.ImageDraw
 from labelme import logger
 
 
-def polygons_to_mask(img_shape, polygons):
+def polygons_to_mask(img_shape, polygons, shape_type=None):
     mask = np.zeros(img_shape[:2], dtype=np.uint8)
     mask = PIL.Image.fromarray(mask)
-    xy = list(map(tuple, polygons))
-    PIL.ImageDraw.Draw(mask).polygon(xy=xy, outline=1, fill=1)
+    draw = PIL.ImageDraw.Draw(mask)
+    if shape_type == "circle" and len(polygons) == 2:
+        ((cx, cy), (px, py)) = polygons
+        d = math.sqrt((cx - px) ** 2 + (cy - py) ** 2)
+        draw.ellipse([cx - d, cy - d, cx + d, cy + d], outline=1, fill=1)
+        print("draw ellipse here .....", d)
+    else:
+        xy = list(map(tuple, polygons))
+        draw.polygon(xy=xy, outline=1, fill=1)
     mask = np.array(mask, dtype=bool)
     return mask
 
@@ -32,6 +40,7 @@ def shapes_to_label(img_shape, shapes, label_name_to_value, type='class', saveGr
     out_bbox_points = []
     for shape in shapes:
         polygons = shape['points']
+        shape_type = shape.get('shape_type', None)
         bbox_class_point=[]
         a_min=np.min(polygons, axis=0)
         a_max=np.max(polygons, axis=0)
@@ -61,7 +70,7 @@ def shapes_to_label(img_shape, shapes, label_name_to_value, type='class', saveGr
             out_bbox_points.append(bbox_class_point)
 
         cls_id = label_name_to_value[cls_name]
-        mask = polygons_to_mask(img_shape[:2], polygons)
+        mask = polygons_to_mask(img_shape[:2], polygons, shape_type)
         cls[mask] = cls_id
         if type == 'instance':
             ins[mask] = ins_id

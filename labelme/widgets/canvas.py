@@ -83,7 +83,7 @@ class Canvas(QtWidgets.QWidget):
 
     @createMode.setter
     def createMode(self, value):
-        if value not in ['polygon', 'rectangle', 'line', 'point']:
+        if value not in ['polygon', 'rectangle', 'circle', 'line', 'point']:
             raise ValueError('Unsupported createMode: %s' % value)
         self._createMode = value
 
@@ -179,6 +179,9 @@ class Canvas(QtWidgets.QWidget):
             elif self.createMode == 'rectangle':
                 self.line.points = [self.current[0], pos]
                 self.line.close()
+            elif self.createMode == 'circle':
+                self.line.points = [self.current[0], pos]
+                self.line.shape_type = "circle"
             elif self.createMode == 'line':
                 self.line.points = [self.current[0], pos]
                 self.line.close()
@@ -284,7 +287,7 @@ class Canvas(QtWidgets.QWidget):
                         self.line[0] = self.current[-1]
                         if self.current.isClosed():
                             self.finalise()
-                    elif self.createMode in ['rectangle', 'line']:
+                    elif self.createMode in ['rectangle', 'circle', 'line']:
                         assert len(self.current.points) == 1
                         self.current.points = self.line.points
                         self.finalise()
@@ -295,6 +298,8 @@ class Canvas(QtWidgets.QWidget):
                     if self.createMode == 'point':
                         self.finalise()
                     else:
+                        if self.createMode == 'circle':
+                            self.current.shape_type = 'circle'
                         self.line.points = [pos, pos]
                         self.setHiding()
                         self.drawingPolygon.emit(True)
@@ -676,7 +681,7 @@ class Canvas(QtWidgets.QWidget):
         self.current.setOpen()
         if self.createMode == 'polygon':
             self.line.points = [self.current[-1], self.current[0]]
-        elif self.createMode in ['rectangle', 'line']:
+        elif self.createMode in ['rectangle', 'line', 'circle']:
             self.current.points = self.current.points[0:1]
         elif self.createMode == 'point':
             self.current = None
