@@ -195,10 +195,11 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         opendir = action('&Open Dir', self.openDirDialog,
                          shortcuts['open_dir'], 'open', u'Open Dir')
         openNextImg = action('&Next Image', self.openNextImg,
-                             shortcuts['open_next'], 'next', u'Open Next')
-
+                             shortcuts['open_next'], 'next', u'Open Next', 
+                             enabled=False)
         openPrevImg = action('&Prev Image', self.openPrevImg,
-                             shortcuts['open_prev'], 'prev', u'Open Prev')
+                             shortcuts['open_prev'], 'prev', u'Open Prev',
+                             enabled=False)
         save = action('&Save', self.saveFile, shortcuts['save'], 'save',
                       'Save labels to file', enabled=False)
         saveAs = action('&Save As', self.saveFileAs, shortcuts['save_as'],
@@ -219,7 +220,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             shortcuts['create_polygon'],
             'polygon',
             'Start drawing polygons',
-            enabled=True,
+            enabled=False,
         )
         createRectangleMode = action(
             'Create Rectangle',
@@ -227,7 +228,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             shortcuts['create_rectangle'],
             'rectangle',
             'Start drawing rectangles',
-            enabled=True,
+            enabled=False,
         )
         createCircleMode = action(
             'Create Circle',
@@ -235,7 +236,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             shortcuts['create_circle'],
             'circle',
             'Start drawing circles',
-            enabled=True,
+            enabled=False,
         )
         createLineMode = action(
             'Create Line',
@@ -243,7 +244,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             shortcuts['create_line'],
             'line',
             'Start drawing lines',
-            enabled=True,
+            enabled=False,
         )
         createPointMode = action(
             'Create Point',
@@ -251,11 +252,11 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             shortcuts['create_point'],
             'point',
             'Start drawing points',
-            enabled=True,
+            enabled=False,
         )
         editMode = action('Edit Polygons', self.setEditMode,
                           shortcuts['edit_polygon'], 'edit',
-                          'Move and edit polygons', enabled=True)
+                          'Move and edit polygons', enabled=False)
 
         delete = action('Delete Polygon', self.deleteSelectedShape,
                         shortcuts['delete_polygon'], 'cancel',
@@ -314,7 +315,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
                           checkable=True, enabled=False)
         export = action('export', self.setExportMasks,
                         shortcuts['export_masks'], 'export',
-                        'Export dataset')
+                        'Export dataset', enabled=False)
         aiAssist = action('AI assist', self.setAIAssist,
                           shortcuts['ai_assist'], 'ai',
                           'AI assist by Polygon RNN++',
@@ -378,6 +379,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             zoom=zoom, zoomIn=zoomIn, zoomOut=zoomOut, zoomOrg=zoomOrg,
             fitWindow=fitWindow, fitWidth=fitWidth, export=export, labelMode=labelMode,
             aiAssist=aiAssist, zoomActions=zoomActions,
+            openNextImg=openNextImg, openPrevImg=openPrevImg,
             fileMenuActions=(open_, opendir, save, saveAs, close, quit),
             tool=(),
             editMenu=(edit, copy, delete, None, undo, undoLastPoint,
@@ -652,6 +654,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.actions.editMode.setEnabled(not drawing)
         self.actions.undoLastPoint.setEnabled(drawing)
         self.actions.undo.setEnabled(not drawing)
+        self.actions.delete.setEnabled(not drawing)
 
     def toggleDrawMode(self, edit=True, createMode='polygon'):
         self.canvas.setEditing(edit)
@@ -1398,6 +1401,10 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         return lst
 
     def importDirImages(self, dirpath, pattern=None, load=True):
+        self.actions.openNextImg.setEnabled(True)
+        self.actions.openPrevImg.setEnabled(True)
+        self.actions.export.setEnabled(True)
+
         if not self.mayContinue() or not dirpath:
             return
 
