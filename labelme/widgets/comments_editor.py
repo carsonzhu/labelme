@@ -55,7 +55,7 @@ class QCommentsEditor(QPlainTextEdit):
         extraSelections = []
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
-            lineColor = QColor(Qt.green).lighter(160)
+            lineColor = QColor(Qt.lightGray).lighter(160)
             selection.format.setBackground(lineColor)
             selection.format.setProperty(QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()

@@ -48,7 +48,10 @@ class LabelFile(object):
                 with open(imagePath, 'rb') as f:
                     imageData = f.read()
             flags = data.get('flags')
-            comments = data['comments']
+            if 'comments' in data.keys():
+                comments = data['comments']
+            else:
+                comments = ''
             imagePath = data['imagePath']
             lineColor = data['lineColor']
             fillColor = data['fillColor']
