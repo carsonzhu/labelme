@@ -28,7 +28,7 @@ def mask_to_bbox(mask):
     return x1, y1, x2, y2
 
 
-def shapes_to_label(img_shape, shapes, label_name_to_value, type='class', saveGrasplbl2txt=False, saveDetectlbl2csv=True):
+def shapes_to_label(img_shape, shapes, label_name_to_value, type='class', saveGrasplbl2txt=False, saveDetectlbl2csv=False):
     assert type in ['class', 'instance', 'grasping']
 
     cls = np.zeros(img_shape[:2], dtype=np.int32)

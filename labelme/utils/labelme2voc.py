@@ -85,6 +85,7 @@ def exportVOC_instance(labels_file, in_dir, out_dir):
                 shapes=data['shapes'],
                 label_name_to_value=class_name_to_id,
                 type='instance',
+                saveDetectlbl2csv=True
             )
             ins[cls == -1] = 0  # ignore it.
 
@@ -181,6 +182,7 @@ def exportVOC_semantic(labels_file, in_dir, out_dir):
                 img_shape=img.shape,
                 shapes=data['shapes'],
                 label_name_to_value=class_name_to_id,
+                saveDetectlbl2csv=True
             )
 
             #save bounding box to csv file for detection labels
